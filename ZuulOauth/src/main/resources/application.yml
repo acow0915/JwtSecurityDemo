@@ -1,0 +1,44 @@
+spring:
+  application:
+    name:Zuul
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181,localhost:2182,localhost:2183
+    dependencies:
+      Test1:
+        path: /Test1
+        loadBalancerType: RANDOM
+        contentTypeTemplate: application/vnd.zooService.$version+json
+        version: v1
+        headers:
+          header1:
+            - value1
+          header2:
+            - value2
+        required: false
+        stubs: org.springframework:foo:stubs
+zuul:
+  #Service will be mapped under the /api URI
+  prefix: /proxy
+  #Uncomment to disable auto-registering all services read from Eureka
+  #ignoredServices: '*'
+  routes:
+    test:
+      path: /redirect/**
+      url: http://www.google.com
+      sensitiveHeaders:
+    customer-by-address:
+      path: /customer-by-address/**
+      url: http://localhost:9098
+      sensitiveHeaders:
+    customer-by-service:
+      # demo url http://localhost:8888/zuulApi/clientApi1/client1/getUserData/Tim
+      path: /clientApi1/**
+      serviceId: client-service 
+      sensitiveHeaders:
+      #stripPrefix: false
+    auth-service:
+      path: /auth/**  
+      serviceId: Auth
+      sensitiveHeaders:
+      strip-prefix: false             
